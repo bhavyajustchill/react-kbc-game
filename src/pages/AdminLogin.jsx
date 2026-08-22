@@ -332,11 +332,6 @@ export default function AdminLogin() {
           <Link to="/" className="backLink">
             ← Return to KBC Quiz Game
           </Link>
-          <div className="credentialsHint">
-            Default Admin: <span>bhavyajustchill@gmail.com</span>
-            <br />
-            Password: <span>#1Bhavya#1</span>
-          </div>
         </div>
       </div>
     </LightLoginContainer>
