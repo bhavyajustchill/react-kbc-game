@@ -7,7 +7,7 @@ import gameOverSound from "../assets/sounds/src_sounds_gameover.mp3";
 
 // Components
 import Trivia from "../components/Trivia";
-import data from "../assets/data/questions";
+import quizData from "../assets/data/quizData.json";
 import Timer from "../components/Timer";
 
 const HomeStyled = styled.div`
@@ -501,29 +501,24 @@ export default function HomeScreen() {
 
   const moneyPyramid = useMemo(
     () =>
-      [
-        { id: 1, amount: "₹ 1000" },
-        { id: 2, amount: "₹ 2000" },
-        { id: 3, amount: "₹ 3000" },
-        { id: 4, amount: "₹ 5000" },
-        { id: 5, amount: "₹ 10,000" },
-        { id: 6, amount: "₹ 20,000" },
-        { id: 7, amount: "₹ 40,000" },
-        { id: 8, amount: "₹ 80,000" },
-        { id: 9, amount: "₹ 1,60,000" },
-        { id: 10, amount: "₹ 3,20,000" },
-        { id: 11, amount: "₹ 6,40,000" },
-        { id: 12, amount: "₹ 12,50,000" },
-        { id: 13, amount: "₹ 25,00,000" },
-        { id: 14, amount: "₹ 50,00,000" },
-        { id: 15, amount: "₹ 1,00,00,000" },
-      ].reverse(),
+      quizData
+        .map((item) => ({
+          id: item.id,
+          amount: item.amount,
+        }))
+        .reverse(),
     [],
   );
 
   useEffect(() => {
-    questionNumber > 1 && setEarned(moneyPyramid.find((m) => m.id === questionNumber - 1).amount);
-  }, [moneyPyramid, questionNumber]);
+    if (stop && questionNumber === quizData.length) {
+      const topTier = moneyPyramid.find((m) => m.id === quizData.length);
+      if (topTier) setEarned(topTier.amount);
+    } else if (questionNumber > 1) {
+      const currentTier = moneyPyramid.find((m) => m.id === questionNumber - 1);
+      if (currentTier) setEarned(currentTier.amount);
+    }
+  }, [moneyPyramid, questionNumber, stop]);
 
   return (
     <HomeStyled>
@@ -568,11 +563,12 @@ export default function HomeScreen() {
             </div>
             <div className="bottom">
               <Trivia
-                data={data}
+                data={quizData}
                 setStop={setStop}
                 questionNumber={questionNumber}
                 setQuestionNumber={setQuestionNumber}
                 setTimerPaused={setTimerPaused}
+                earned={earned}
               />
             </div>
           </>

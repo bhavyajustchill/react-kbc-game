@@ -303,4 +303,48 @@
   .option-text {
     font-size: 14px;
   }
+  .quit-btn {
+    padding: 6px 18px;
+    font-size: 12px;
+  }
+}
+
+/* Quit Game Button */
+.quit-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4px;
+  width: 100%;
+}
+
+.quit-btn {
+  background: linear-gradient(135deg, rgba(30, 10, 40, 0.85), rgba(70, 15, 30, 0.85));
+  color: #fbbf24;
+  border: 1.5px solid rgba(251, 191, 36, 0.5);
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quit-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, rgba(90, 20, 40, 0.95), rgba(130, 30, 40, 0.95));
+  border-color: #f59e0b;
+  color: #ffffff;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+}
+
+.quit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

@@ -14,6 +14,7 @@ export default function Trivia({
   questionNumber,
   setQuestionNumber,
   setTimerPaused,
+  earned,
 }) {
   const [question, setQuestion] = useState({});
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -23,6 +24,14 @@ export default function Trivia({
   const [correctAnswer] = useSound(correct);
   const [wrongAnswer] = useSound(wrong);
   const [lockInAnswer] = useSound(lockIn);
+
+  const handleQuit = () => {
+    if (selectedAnswer !== null) return;
+    if (setTimerPaused) {
+      setTimerPaused(true);
+    }
+    setStop(true);
+  };
 
   useEffect(() => {
     letsPlay();
@@ -65,9 +74,13 @@ export default function Trivia({
           if (setTimerPaused) {
             setTimerPaused(false);
           }
-          setQuestionNumber((prev) => prev + 1);
-          setSelectedAnswer(null);
-          setAnswerState("");
+          if (questionNumber >= data.length) {
+            setStop(true);
+          } else {
+            setQuestionNumber((prev) => prev + 1);
+            setSelectedAnswer(null);
+            setAnswerState("");
+          }
         });
       } else {
         wrongAnswer();
@@ -133,6 +146,17 @@ export default function Trivia({
             );
           })}
         </div>
+      </div>
+
+      {/* End Game / Walk Away Button */}
+      <div className="quit-container">
+        <button
+          className="quit-btn"
+          onClick={handleQuit}
+          disabled={selectedAnswer !== null}
+          title="Quit and walk away with your current winnings">
+          Quit Game {earned && earned !== "₹ 0" ? `(Take ${earned})` : ""}
+        </button>
       </div>
     </div>
   );
