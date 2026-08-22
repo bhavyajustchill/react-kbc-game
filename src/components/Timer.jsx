@@ -8,8 +8,10 @@ export default function Timer({ setStop, questionNumber, timerPaused }) {
 
   useEffect(() => {
     if (timer === 0) {
-      stopCountdown();
-      return setStop(true);
+      const timeout = setTimeout(() => {
+        setStop(true);
+      }, 2500);
+      return () => clearTimeout(timeout);
     }
 
     if (timerPaused) {
@@ -38,3 +40,4 @@ export default function Timer({ setStop, questionNumber, timerPaused }) {
 
   return timer;
 }
+
