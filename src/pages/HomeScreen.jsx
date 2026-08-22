@@ -7,7 +7,8 @@ import gameOverSound from "../assets/sounds/src_sounds_gameover.mp3";
 
 // Components
 import Trivia from "../components/Trivia";
-import quizData from "../assets/data/quizData.json";
+import localQuizData from "../assets/data/quizData.json";
+import { fetchQuizQuestions } from "../services/api";
 import Timer from "../components/Timer";
 
 const HomeStyled = styled.div`
@@ -463,6 +464,26 @@ export default function HomeScreen() {
   const [timerPaused, setTimerPaused] = useState(false);
   const [earned, setEarned] = useState("₹ 0");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState(localQuizData);
+
+  // Fetch dynamic questions from backend API
+  useEffect(() => {
+    let isMounted = true;
+    const loadQuestions = async () => {
+      try {
+        const data = await fetchQuizQuestions();
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          setQuizQuestions(data);
+        }
+      } catch (err) {
+        console.warn("Could not fetch quiz questions from API, using fallback data:", err.message);
+      }
+    };
+    loadQuestions();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Persistent Volume State
   const [volume, setVolume] = useState(() => {
@@ -501,24 +522,24 @@ export default function HomeScreen() {
 
   const moneyPyramid = useMemo(
     () =>
-      quizData
+      quizQuestions
         .map((item) => ({
           id: item.id,
           amount: item.amount,
         }))
         .reverse(),
-    [],
+    [quizQuestions],
   );
 
   useEffect(() => {
-    if (stop && questionNumber === quizData.length) {
-      const topTier = moneyPyramid.find((m) => m.id === quizData.length);
+    if (stop && questionNumber === quizQuestions.length) {
+      const topTier = moneyPyramid.find((m) => m.id === quizQuestions.length);
       if (topTier) setEarned(topTier.amount);
     } else if (questionNumber > 1) {
       const currentTier = moneyPyramid.find((m) => m.id === questionNumber - 1);
       if (currentTier) setEarned(currentTier.amount);
     }
-  }, [moneyPyramid, questionNumber, stop]);
+  }, [moneyPyramid, questionNumber, stop, quizQuestions.length]);
 
   return (
     <HomeStyled>
@@ -563,7 +584,7 @@ export default function HomeScreen() {
             </div>
             <div className="bottom">
               <Trivia
-                data={quizData}
+                data={quizQuestions}
                 setStop={setStop}
                 questionNumber={questionNumber}
                 setQuestionNumber={setQuestionNumber}

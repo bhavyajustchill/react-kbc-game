@@ -181,3 +181,17 @@
   text-decoration: underline;
   text-shadow: 0 0 10px rgba(56, 189, 248, 0.9);
 }
+
+.footer-separator {
+  color: #64748b;
+  margin: 0 8px;
+}
+
+.admin-link {
+  color: #f8c146;
+}
+
+.admin-link:hover {
+  color: #ffd700;
+  text-shadow: 0 0 10px rgba(248, 193, 70, 0.9);
+}
