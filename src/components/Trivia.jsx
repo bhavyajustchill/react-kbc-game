@@ -1,107 +1,16 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-
 import useSound from "use-sound";
 import play from "../assets/sounds/src_sounds_play.mp3";
 import correct from "../assets/sounds/src_sounds_correct.mp3";
 import wrong from "../assets/sounds/src_sounds_wrong.mp3";
-
-const TriviaStyled = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-  .question {
-    width: 80%;
-    background-color: rgba(0, 0, 0, 0.7);
-    border: 2px solid white;
-    text-align: center;
-    padding: 20px;
-    border-radius: 10px;
-    font-size: 20px;
-  }
-  .answers {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    .answer {
-      width: 40%;
-      padding: 10px;
-      text-align: center;
-      background-color: rgba(0, 0, 0, 0.7);
-      border: 1px solid white;
-      border-radius: 15px;
-      font-size: 20px;
-      font-weight: 300;
-      cursor: pointer;
-      margin: 0 10px 20px 10px;
-      transition: background 1s;
-    }
-    .answer:hover,
-    .answer.active {
-      background: #ebb300;
-      color: white;
-    }
-    .answer.correct {
-      animation: correct 3s ease forwards;
-    }
-    @keyframes correct {
-      0%,
-      22%,
-      42% {
-        background: #ebb300;
-      }
-      20%,
-      40%,
-      60% {
-        background: linear-gradient(#0e0124, #22074d);
-      }
-      62%,
-      100% {
-        background: rgba(31, 255, 15, 0.7);
-        color: white;
-      }
-    }
-    .answer.wrong {
-      animation: wrong 3s ease forwards;
-    }
-    @keyframes wrong {
-      0%,
-      22%,
-      42% {
-        background: #ebb300;
-      }
-      20%,
-      40%,
-      60% {
-        background: linear-gradient(#0e0124, #22074d);
-      }
-      62%,
-      100% {
-        background: #d61c22;
-      }
-    }
-  }
-  @media only screen and (max-width: 768px) {
-    .question {
-      margin-top: 5rem;
-      height: 100%;
-    }
-    .answers {
-      margin-top: 5rem;
-      height: 100%;
-    }
-  }
-`;
-
 import "./Trivia.css";
 
+const OPTION_LETTERS = ["A", "B", "C", "D"];
+
 export default function Trivia({ data, setStop, questionNumber, setQuestionNumber }) {
-  const [question, setQuestion] = useState([]);
+  const [question, setQuestion] = useState({});
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [className, setClassName] = useState("Name");
+  const [answerState, setAnswerState] = useState(""); // 'active', 'correct', 'wrong'
 
   const [letsPlay] = useSound(play);
   const [correctAnswer] = useSound(correct);
@@ -112,7 +21,9 @@ export default function Trivia({ data, setStop, questionNumber, setQuestionNumbe
   }, [letsPlay]);
 
   useEffect(() => {
-    setQuestion(data[questionNumber - 1]);
+    if (data && data[questionNumber - 1]) {
+      setQuestion(data[questionNumber - 1]);
+    }
   }, [data, questionNumber]);
 
   const delay = (duration, callback) => {
@@ -121,16 +32,23 @@ export default function Trivia({ data, setStop, questionNumber, setQuestionNumbe
     }, duration);
   };
 
-  const handleClick = (e) => {
-    setSelectedAnswer(e);
-    setClassName("answer active");
-    delay(3000, () => setClassName(e.correct ? "answer correct" : "answer wrong"));
+  const handleClick = (answer) => {
+    if (selectedAnswer !== null) return; // Prevent multiple clicks
+
+    setSelectedAnswer(answer);
+    setAnswerState("active");
+
+    delay(3000, () => {
+      setAnswerState(answer.correct ? "correct" : "wrong");
+    });
+
     delay(5000, () => {
-      if (e.correct) {
+      if (answer.correct) {
         correctAnswer();
         delay(1000, () => {
           setQuestionNumber((prev) => prev + 1);
           setSelectedAnswer(null);
+          setAnswerState("");
         });
       } else {
         wrongAnswer();
@@ -141,20 +59,62 @@ export default function Trivia({ data, setStop, questionNumber, setQuestionNumbe
     });
   };
 
+  const answers = question.answers || [];
+  const row1 = answers.slice(0, 2);
+  const row2 = answers.slice(2, 4);
+
   return (
-    <TriviaStyled>
-      <div className="question">{question.question}</div>
-      <div className="answers">
-        {question.answers &&
-          question.answers.map((e, i) => (
-            <div
-              key={i}
-              className={selectedAnswer === e ? className : "answer"}
-              onClick={() => handleClick(e)}>
-              {e.text}
-            </div>
-          ))}
+    <div className="trivia-container">
+      {/* Question Rail & Box */}
+      <div className="kbc-rail question-rail">
+        <div className="kbc-box question-box">
+          <div className="kbc-inner question-inner">
+            <span className="question-text">{question.question}</span>
+          </div>
+        </div>
       </div>
-    </TriviaStyled>
+
+      {/* Answers Grid with Rails */}
+      <div className="answers-container">
+        {/* Row 1: A and B */}
+        <div className="kbc-rail answers-rail">
+          {row1.map((item, idx) => {
+            const isSelected = selectedAnswer === item;
+            const stateClass = isSelected ? answerState : "";
+            return (
+              <div
+                key={idx}
+                className={`kbc-box answer-box ${stateClass}`}
+                onClick={() => handleClick(item)}>
+                <div className="kbc-inner answer-inner">
+                  <span className="option-prefix">&#9670; {OPTION_LETTERS[idx]}:</span>
+                  <span className="option-text">{item.text}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Row 2: C and D */}
+        <div className="kbc-rail answers-rail">
+          {row2.map((item, idx) => {
+            const actualIndex = idx + 2;
+            const isSelected = selectedAnswer === item;
+            const stateClass = isSelected ? answerState : "";
+            return (
+              <div
+                key={actualIndex}
+                className={`kbc-box answer-box ${stateClass}`}
+                onClick={() => handleClick(item)}>
+                <div className="kbc-inner answer-inner">
+                  <span className="option-prefix">&#9670; {OPTION_LETTERS[actualIndex]}:</span>
+                  <span className="option-text">{item.text}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
   );
 }
