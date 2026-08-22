@@ -12,7 +12,16 @@ const LightLoginContainer = styled.div`
   background: radial-gradient(circle at top center, #f1f5f9 0%, #e2e8f0 100%);
   padding: 20px;
   position: relative;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    sans-serif;
 
   * {
     box-sizing: border-box;
@@ -26,7 +35,9 @@ const LightLoginContainer = styled.div`
     border: 1px solid #e2e8f0;
     border-radius: 20px;
     padding: 40px 35px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.08),
+      0 1px 3px rgba(0, 0, 0, 0.05);
     z-index: 10;
   }
 
@@ -78,9 +89,16 @@ const LightLoginContainer = styled.div`
   }
 
   @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    25% {
+      transform: translateX(-6px);
+    }
+    75% {
+      transform: translateX(6px);
+    }
   }
 
   .formGroup {
@@ -218,8 +236,8 @@ const LightLoginContainer = styled.div`
 
 export default function AdminLogin() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("bhavyajustchill@gmail.com");
-  const [password, setPassword] = useState("#1Bhavya#1");
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -315,7 +333,8 @@ export default function AdminLogin() {
             ← Return to KBC Quiz Game
           </Link>
           <div className="credentialsHint">
-            Default Admin: <span>bhavyajustchill@gmail.com</span><br />
+            Default Admin: <span>bhavyajustchill@gmail.com</span>
+            <br />
             Password: <span>#1Bhavya#1</span>
           </div>
         </div>
@@ -323,3 +342,4 @@ export default function AdminLogin() {
     </LightLoginContainer>
   );
 }
+
