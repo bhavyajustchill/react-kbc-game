@@ -6,6 +6,12 @@ A little Quizz app with reactJS and its hooks owo.
 
 Yes, There's just 4 question :'c but I'll add others questions soon!
 
-![alt text](https://github.com/ProgrammingGeek02/React-Millionaire-Quiz-App-/blob/main/public/images/2.png?raw=true)
+![1](./src/assets/screenshots/1.png)
 
-![alt text](https://github.com/ProgrammingGeek02/React-Millionaire-Quiz-App-/blob/main/public/images/aa.png?raw=true)
+![2](./src/assets/screenshots/2.png)
+
+![3](./src/assets/screenshots/3.png)
+
+![4](./src/assets/screenshots/4.png)
+
+![5](./src/assets/screenshots/5.png)
