@@ -24,10 +24,10 @@ function GameScreen() {
             BhavyaJustChill
           </a>
         </span>
-        <span className="footer-separator">•</span>
+        {/* <span className="footer-separator">•</span>
         <Link to="/admin" className="footer-link admin-link" title="Admin Portal">
           🔒 Admin Portal
-        </Link>
+        </Link> */}
       </footer>
     </div>
   );
@@ -61,3 +61,4 @@ function App() {
 }
 
 export default App;
+

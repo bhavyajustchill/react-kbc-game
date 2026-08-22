@@ -456,6 +456,80 @@ const HomeStyled = styled.div`
       padding-bottom: 45px; /* space for bottom sticky footer on mobile */
     }
   }
+
+  /* Fullscreen Hot Seat Loader */
+  .gameLoadingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, #0a0640 0%, #03022f 70%, #010015 100%);
+    backdrop-filter: blur(16px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 5000;
+    gap: 24px;
+    animation: fadeIn 0.3s ease;
+
+    .spinnerOrb {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .spinnerRing {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 4px solid rgba(248, 193, 70, 0.15);
+        border-top: 4px solid #f8c146;
+        border-right: 4px solid #e67e22;
+        border-radius: 50%;
+        animation: spin 1.2s linear infinite;
+        box-shadow: 0 0 30px rgba(248, 193, 70, 0.4);
+      }
+
+      .innerGlow {
+        font-size: 28px;
+        animation: pulseGlow 1.5s ease-in-out infinite alternate;
+      }
+    }
+
+    .loadingTextWrapper {
+      text-align: center;
+
+      .loadingTitle {
+        font-size: 22px;
+        font-weight: 800;
+        color: #ffffff;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+        background: linear-gradient(135deg, #ffffff 40%, #f8c146 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .loadingSubtitle {
+        font-size: 13px;
+        color: #94a3b8;
+        letter-spacing: 0.5px;
+      }
+    }
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
 export default function HomeScreen() {
@@ -465,6 +539,7 @@ export default function HomeScreen() {
   const [earned, setEarned] = useState("₹ 0");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState(localQuizData);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Fetch dynamic questions from backend API
   useEffect(() => {
@@ -477,6 +552,10 @@ export default function HomeScreen() {
         }
       } catch (err) {
         console.warn("Could not fetch quiz questions from API, using fallback data:", err.message);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
     loadQuestions();
@@ -543,6 +622,20 @@ export default function HomeScreen() {
 
   return (
     <HomeStyled>
+      {/* Dynamic API Loading Overlay */}
+      {isLoading && (
+        <div className="gameLoadingOverlay">
+          <div className="spinnerOrb">
+            <div className="spinnerRing" />
+            <div className="innerGlow">👑</div>
+          </div>
+          <div className="loadingTextWrapper">
+            <div className="loadingTitle">Entering Hot Seat...</div>
+            <div className="loadingSubtitle">Loading quiz questions from MongoDB Atlas</div>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Hamburger Button */}
       <button
         className={`menuToggle ${isMenuOpen ? "open" : ""}`}
