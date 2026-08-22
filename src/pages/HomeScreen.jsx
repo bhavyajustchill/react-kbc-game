@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
+import useSound from "use-sound";
 import img from "../assets/images/bg.jpg";
+import gameOverSound from "../assets/sounds/src_sounds_gameover.mp3";
 
 // Components
 import Trivia from "../components/Trivia";
@@ -240,7 +242,16 @@ const HomeStyled = styled.div`
 export default function HomeScreen() {
   const [questionNumber, setQuestionNumber] = useState(1);
   const [stop, setStop] = useState(false);
+  const [timerPaused, setTimerPaused] = useState(false);
   const [earned, setEarned] = useState("₹ 0");
+
+  const [playGameOver] = useSound(gameOverSound);
+
+  useEffect(() => {
+    if (stop) {
+      playGameOver();
+    }
+  }, [stop, playGameOver]);
 
   const moneyPyramid = useMemo(
     () =>
@@ -286,7 +297,11 @@ export default function HomeScreen() {
           <>
             <div className="top">
               <div className="timer">
-                <Timer setStop={setStop} questionNumber={questionNumber} />
+                <Timer
+                  setStop={setStop}
+                  questionNumber={questionNumber}
+                  timerPaused={timerPaused}
+                />
               </div>
             </div>
             <div className="bottom">
@@ -295,6 +310,7 @@ export default function HomeScreen() {
                 setStop={setStop}
                 questionNumber={questionNumber}
                 setQuestionNumber={setQuestionNumber}
+                setTimerPaused={setTimerPaused}
               />
             </div>
           </>

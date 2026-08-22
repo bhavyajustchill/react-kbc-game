@@ -3,11 +3,18 @@ import useSound from "use-sound";
 import play from "../assets/sounds/src_sounds_play.mp3";
 import correct from "../assets/sounds/src_sounds_correct.mp3";
 import wrong from "../assets/sounds/src_sounds_wrong.mp3";
+import lockIn from "../assets/sounds/src-sounds-lock-in.mp3";
 import "./Trivia.css";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"];
 
-export default function Trivia({ data, setStop, questionNumber, setQuestionNumber }) {
+export default function Trivia({
+  data,
+  setStop,
+  questionNumber,
+  setQuestionNumber,
+  setTimerPaused,
+}) {
   const [question, setQuestion] = useState({});
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [answerState, setAnswerState] = useState(""); // 'active', 'correct', 'wrong'
@@ -15,6 +22,7 @@ export default function Trivia({ data, setStop, questionNumber, setQuestionNumbe
   const [letsPlay] = useSound(play);
   const [correctAnswer] = useSound(correct);
   const [wrongAnswer] = useSound(wrong);
+  const [lockInAnswer] = useSound(lockIn);
 
   useEffect(() => {
     letsPlay();
@@ -35,6 +43,14 @@ export default function Trivia({ data, setStop, questionNumber, setQuestionNumbe
   const handleClick = (answer) => {
     if (selectedAnswer !== null) return; // Prevent multiple clicks
 
+    // Immediately stop the countdown timer and countdown audio
+    if (setTimerPaused) {
+      setTimerPaused(true);
+    }
+
+    // Play lock in suspense sound
+    lockInAnswer();
+
     setSelectedAnswer(answer);
     setAnswerState("active");
 
@@ -45,14 +61,17 @@ export default function Trivia({ data, setStop, questionNumber, setQuestionNumbe
     delay(5000, () => {
       if (answer.correct) {
         correctAnswer();
-        delay(1000, () => {
+        delay(5000, () => {
+          if (setTimerPaused) {
+            setTimerPaused(false);
+          }
           setQuestionNumber((prev) => prev + 1);
           setSelectedAnswer(null);
           setAnswerState("");
         });
       } else {
         wrongAnswer();
-        delay(1000, () => {
+        delay(5000, () => {
           setStop(true);
         });
       }
