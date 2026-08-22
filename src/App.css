@@ -120,3 +120,64 @@
   font-size: 18px;
   font-weight: 500;
 }
+
+/* Persistent Sticky Footer */
+.app-container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.app-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  text-align: center;
+  padding: 10px 16px;
+  background: rgba(2, 2, 48, 0.85);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.heart-icon {
+  color: #00a8ff;
+  font-size: 16px;
+  display: inline-block;
+  animation: heartBeat 1.4s infinite ease-in-out;
+  filter: drop-shadow(0 0 6px rgba(0, 168, 255, 0.8));
+}
+
+@keyframes heartBeat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+    filter: drop-shadow(0 0 10px rgba(0, 168, 255, 1));
+  }
+}
+
+.footer-link {
+  color: #38bdf8;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.footer-link:hover {
+  color: #7dd3fc;
+  text-decoration: underline;
+  text-shadow: 0 0 10px rgba(56, 189, 248, 0.9);
+}

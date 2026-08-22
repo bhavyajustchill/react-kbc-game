@@ -43,7 +43,7 @@ const StartStyled = styled.div`
   }
 `;
 
-export default function StartScreen({ setUsername }) {
+export default function StartScreen({ username, setUsername }) {
   const inputRef = useRef();
 
   const handleClick = () => {
@@ -53,7 +53,13 @@ export default function StartScreen({ setUsername }) {
   return (
     <StartStyled>
       <div className="start">
-        <input ref={inputRef} type="text" placeholder="Enter your name" className="startInput" />
+        <input
+          ref={inputRef}
+          type="text"
+          placeholder="Enter your name"
+          className="startInput"
+          value={username}
+        />
         <button className="startButton" onClick={handleClick}>
           Start
         </button>

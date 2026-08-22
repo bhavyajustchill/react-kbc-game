@@ -240,33 +240,32 @@ const HomeStyled = styled.div`
 export default function HomeScreen() {
   const [questionNumber, setQuestionNumber] = useState(1);
   const [stop, setStop] = useState(false);
-  const [earned, setEarned] = useState("$ 0");
+  const [earned, setEarned] = useState("₹ 0");
 
   const moneyPyramid = useMemo(
     () =>
       [
-        { id: 1, amount: "$ 100" },
-        { id: 2, amount: "$ 200" },
-        { id: 3, amount: "$ 300" },
-        { id: 4, amount: "$ 500" },
-        { id: 5, amount: "$ 1.000" },
-        { id: 6, amount: "$ 2.000" },
-        { id: 7, amount: "$ 4.000" },
-        { id: 8, amount: "$ 8.000" },
-        { id: 9, amount: "$ 16.000" },
-        { id: 10, amount: "$ 32.000" },
-        { id: 11, amount: "$ 64.000" },
-        { id: 12, amount: "$ 125.000" },
-        { id: 13, amount: "$ 250.000" },
-        { id: 14, amount: "$ 500.000" },
-        { id: 15, amount: "$ 1.000.000" },
+        { id: 1, amount: "₹ 1000" },
+        { id: 2, amount: "₹ 2000" },
+        { id: 3, amount: "₹ 3000" },
+        { id: 4, amount: "₹ 5000" },
+        { id: 5, amount: "₹ 10,000" },
+        { id: 6, amount: "₹ 20,000" },
+        { id: 7, amount: "₹ 40,000" },
+        { id: 8, amount: "₹ 80,000" },
+        { id: 9, amount: "₹ 1,60,000" },
+        { id: 10, amount: "₹ 3,20,000" },
+        { id: 11, amount: "₹ 6,40,000" },
+        { id: 12, amount: "₹ 12,50,000" },
+        { id: 13, amount: "₹ 25,00,000" },
+        { id: 14, amount: "₹ 50,00,000" },
+        { id: 15, amount: "₹ 1,00,00,000" },
       ].reverse(),
-    []
+    [],
   );
 
   useEffect(() => {
-    questionNumber > 1 &&
-      setEarned(moneyPyramid.find((m) => m.id === questionNumber - 1).amount);
+    questionNumber > 1 && setEarned(moneyPyramid.find((m) => m.id === questionNumber - 1).amount);
   }, [moneyPyramid, questionNumber]);
 
   return (
@@ -279,9 +278,7 @@ export default function HomeScreen() {
               You earned:
               <span className="earnedAmount">{earned}</span>
             </h1>
-            <button
-              className="restartBtn"
-              onClick={() => window.location.reload()}>
+            <button className="restartBtn" onClick={() => window.location.reload()}>
               Play Again
             </button>
           </div>
@@ -289,10 +286,7 @@ export default function HomeScreen() {
           <>
             <div className="top">
               <div className="timer">
-                <Timer
-                  setStop={setStop}
-                  questionNumber={questionNumber}
-                />
+                <Timer setStop={setStop} questionNumber={questionNumber} />
               </div>
             </div>
             <div className="bottom">
@@ -311,11 +305,7 @@ export default function HomeScreen() {
           {moneyPyramid.map((m, index) => (
             <li
               key={index}
-              className={
-                questionNumber === m.id
-                  ? "moneyListItem active"
-                  : "moneyListItem"
-              }>
+              className={questionNumber === m.id ? "moneyListItem active" : "moneyListItem"}>
               <span className="moneyListItemNumber">{m.id}</span>
               <span className="moneyListItemAmount">{m.amount}</span>
             </li>
@@ -325,3 +315,4 @@ export default function HomeScreen() {
     </HomeStyled>
   );
 }
+
