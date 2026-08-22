@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import useSound from "use-sound";
+import { Howler } from "howler";
 import img from "../assets/images/bg.jpg";
 import gameOverSound from "../assets/sounds/src_sounds_gameover.mp3";
 
@@ -13,15 +14,71 @@ const HomeStyled = styled.div`
   height: 100vh;
   display: flex;
   color: white;
+  position: relative;
+  overflow: hidden;
+
+  /* Hamburger Menu Button (Mobile only) */
+  .menuToggle {
+    display: none;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10002;
+    width: 44px;
+    height: 44px;
+    background: rgba(3, 2, 47, 0.85);
+    border: 2px solid #f8c146;
+    border-radius: 12px;
+    cursor: pointer;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5), 0 0 10px rgba(248, 193, 70, 0.4);
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+
+    .bar {
+      width: 22px;
+      height: 2.5px;
+      background-color: #f8c146;
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    &.open .bar:nth-child(1) {
+      transform: translateY(7.5px) rotate(45deg);
+    }
+    &.open .bar:nth-child(2) {
+      opacity: 0;
+    }
+    &.open .bar:nth-child(3) {
+      transform: translateY(-7.5px) rotate(-45deg);
+    }
+  }
+
+  /* Backdrop Overlay for Mobile Drawer */
+  .drawerBackdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
+    animation: fadeIn 0.25s ease;
+  }
 
   .main {
     width: 75%;
     background:
       linear-gradient(to bottom, rgba(0, 0, 0, 0), var(--deep-dark)),
       url(${img}) center;
+    background-size: cover;
     display: flex;
     flex-direction: column;
     position: relative;
+    height: 100vh;
 
     .finished {
       position: relative;
@@ -97,8 +154,11 @@ const HomeStyled = styled.div`
   }
 
   .top {
-    height: 50%;
+    height: 45%;
     position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
   }
 
   .timer {
@@ -114,45 +174,148 @@ const HomeStyled = styled.div`
     position: absolute;
     bottom: 10px;
     left: 80px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.4);
   }
 
   .bottom {
-    height: 50%;
+    height: 55%;
+    padding-bottom: 45px; /* space for sticky footer */
+    box-sizing: border-box;
   }
 
   .pyramid {
     width: 25%;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    background-color: #03022f;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
+    z-index: 100;
+    height: 100vh;
+    padding-bottom: 46px; /* ensures volume bar is fully visible above fixed footer */
+    box-sizing: border-box;
+  }
+
+  .pyramidHeader {
+    display: none;
+    width: 100%;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+
+    h3 {
+      font-size: 18px;
+      font-weight: 800;
+      color: #f8c146;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .closeBtn {
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px;
+    }
   }
 
   .moneyList {
     list-style: none;
     width: 100%;
-    padding: 20px;
+    padding: 10px 20px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
   }
 
   .moneyListItem {
     display: flex;
     align-items: center;
-    padding: 5px;
-    border-radius: 5px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
   }
 
   .moneyListItem.active {
-    background: teal;
+    background: linear-gradient(90deg, #008080, #00a8a8);
+    box-shadow: 0 0 12px rgba(0, 168, 168, 0.7);
   }
 
   .moneyListItemNumber {
-    font-size: 18px;
-    font-weight: 100;
-    width: 30%;
+    font-size: 15px;
+    font-weight: 400;
+    width: 35%;
+    color: #ffd700;
   }
 
   .moneyListItemAmount {
-    font-size: 20px;
-    font-weight: 300;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  /* Volume Controller at bottom of pyramid */
+  .volumeControl {
+    width: 100%;
+    padding: 12px 18px;
+    background: rgba(2, 1, 28, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-sizing: border-box;
+
+    .volumeBtn {
+      background: none;
+      border: none;
+      color: #f8c146;
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      transition: transform 0.15s ease;
+
+      &:hover {
+        transform: scale(1.15);
+      }
+    }
+
+    .volumeSlider {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: #1c1a4d;
+      accent-color: #f8c146;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .volumeText {
+      font-size: 13px;
+      font-weight: 700;
+      color: #cbd5e1;
+      min-width: 36px;
+      text-align: right;
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes popIn {
@@ -198,43 +361,98 @@ const HomeStyled = styled.div`
     }
   }
 
+  /* Mobile Responsive Breakpoint */
   @media only screen and (max-width: 768px) {
-    display: flex;
-    flex-direction: column;
+    .menuToggle {
+      display: flex;
+    }
+
+    .drawerBackdrop {
+      display: block;
+    }
 
     .main {
       width: 100%;
-      height: 100%;
+      height: 100vh;
 
       .finished {
-        margin-top: 80px;
-        margin-bottom: 80px;
-        padding: 30px 25px;
+        margin: auto;
+        padding: 30px 20px;
+        width: 90%;
       }
 
       .endText {
-        font-size: 34px;
+        font-size: 32px;
       }
 
       .earnedAmount {
-        font-size: 42px;
+        font-size: 40px;
       }
 
       .top {
-        height: 30%;
+        height: 35%;
       }
 
       .timer {
-        display: flex;
-        position: relative;
-        bottom: 0;
-        top: 10%;
-        left: 40%;
+        bottom: 5px;
+        left: 20px;
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+        border-width: 4px;
+      }
+
+      .bottom {
+        height: 65%;
+        padding-bottom: 50px;
       }
     }
 
+    .pyramidHeader {
+      display: flex;
+    }
+
     .pyramid {
-      width: 100%;
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: 290px;
+      max-width: 85vw;
+      height: 100vh;
+      background: rgba(3, 2, 47, 0.96);
+      backdrop-filter: blur(15px);
+      border-left: 2px solid #f8c146;
+      box-shadow: -8px 0 30px rgba(0, 0, 0, 0.8);
+      z-index: 9999;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      justify-content: flex-start;
+      padding-top: 10px;
+
+      &.open {
+        transform: translateX(0);
+      }
+
+      .moneyList {
+        padding: 10px 15px 15px 15px;
+      }
+
+      .moneyListItem {
+        padding: 4px 8px;
+      }
+
+      .moneyListItemNumber {
+        font-size: 15px;
+      }
+
+      .moneyListItemAmount {
+        font-size: 16px;
+      }
+    }
+
+    .volumeControl {
+      padding-bottom: 45px; /* space for bottom sticky footer on mobile */
     }
   }
 `;
@@ -244,6 +462,34 @@ export default function HomeScreen() {
   const [stop, setStop] = useState(false);
   const [timerPaused, setTimerPaused] = useState(false);
   const [earned, setEarned] = useState("₹ 0");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  // Persistent Volume State
+  const [volume, setVolume] = useState(() => {
+    const saved = localStorage.getItem("kbc_volume");
+    return saved !== null ? parseFloat(saved) : 0.8;
+  });
+  const [prevVolume, setPrevVolume] = useState(0.8);
+
+  useEffect(() => {
+    Howler.volume(volume);
+    localStorage.setItem("kbc_volume", volume.toString());
+  }, [volume]);
+
+  const toggleMute = () => {
+    if (volume > 0) {
+      setPrevVolume(volume);
+      setVolume(0);
+    } else {
+      setVolume(prevVolume > 0 ? prevVolume : 0.8);
+    }
+  };
+
+  const getVolumeIcon = () => {
+    if (volume === 0) return "🔇";
+    if (volume < 0.5) return "🔉";
+    return "🔊";
+  };
 
   const [playGameOver] = useSound(gameOverSound);
 
@@ -281,6 +527,22 @@ export default function HomeScreen() {
 
   return (
     <HomeStyled>
+      {/* Mobile Hamburger Button */}
+      <button
+        className={`menuToggle ${isMenuOpen ? "open" : ""}`}
+        onClick={() => setIsMenuOpen((prev) => !prev)}
+        aria-label="Toggle Prize Ladder">
+        <div className="bar" />
+        <div className="bar" />
+        <div className="bar" />
+      </button>
+
+      {/* Mobile Backdrop Overlay */}
+      {isMenuOpen && (
+        <div className="drawerBackdrop" onClick={() => setIsMenuOpen(false)} />
+      )}
+
+      {/* Main Game Screen */}
       <div className="main">
         {stop ? (
           <div className="finished">
@@ -316,7 +578,15 @@ export default function HomeScreen() {
           </>
         )}
       </div>
-      <div className="pyramid">
+
+      {/* Money Pyramid (Desktop sidebar / Mobile slide-in drawer) */}
+      <div className={`pyramid ${isMenuOpen ? "open" : ""}`}>
+        <div className="pyramidHeader">
+          <h3>Prize Ladder</h3>
+          <button className="closeBtn" onClick={() => setIsMenuOpen(false)}>
+            ✕
+          </button>
+        </div>
         <ul className="moneyList">
           {moneyPyramid.map((m, index) => (
             <li
@@ -327,8 +597,29 @@ export default function HomeScreen() {
             </li>
           ))}
         </ul>
+
+        {/* Persistent Volume Control */}
+        <div className="volumeControl">
+          <button
+            className="volumeBtn"
+            onClick={toggleMute}
+            aria-label="Mute or Unmute"
+            title={volume === 0 ? "Unmute" : "Mute"}>
+            {getVolumeIcon()}
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={volume}
+            onChange={(e) => setVolume(parseFloat(e.target.value))}
+            className="volumeSlider"
+            aria-label="Volume Slider"
+          />
+          <span className="volumeText">{Math.round(volume * 100)}%</span>
+        </div>
       </div>
     </HomeStyled>
   );
 }
-

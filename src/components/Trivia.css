@@ -266,21 +266,27 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .trivia-container {
-    gap: 14px;
+    gap: 12px;
+    padding: 0 8px;
   }
   .question-box {
-    width: 96%;
-    min-height: 60px;
+    width: 98%;
   }
   .question-inner {
-    padding: 10px 30px;
+    padding: 12px 28px;
+    min-height: 56px;
   }
   .question-text {
     font-size: 15px;
+    line-height: 1.35;
+  }
+  .answers-container {
+    gap: 10px;
+    width: 100%;
   }
   .answers-rail {
     flex-direction: column;
-    width: 96%;
+    width: 98%;
     gap: 10px;
   }
   .answers-rail::before {
@@ -288,10 +294,10 @@
   }
   .answer-box {
     width: 100%;
-    min-height: 42px;
   }
   .answer-inner {
-    padding: 8px 24px;
+    padding: 8px 22px;
+    min-height: 44px;
   }
   .option-prefix,
   .option-text {
