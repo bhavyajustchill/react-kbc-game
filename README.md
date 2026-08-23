@@ -14,6 +14,8 @@ A little KBC Game made using MERN Stack.
 
 ![5](./src/assets/screenshots/5.png)
 
+![6](./src/assets/screenshots/6.png)
+
 ## Features
 
 - [x] User Authentication
