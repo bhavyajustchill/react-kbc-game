@@ -18,7 +18,7 @@ export default function Trivia({
 }) {
   const [question, setQuestion] = useState({});
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [answerState, setAnswerState] = useState(""); // 'active', 'correct', 'wrong'
+  const [isRevealed, setIsRevealed] = useState(false);
 
   const [letsPlay] = useSound(play);
   const [correctAnswer] = useSound(correct);
@@ -40,8 +40,13 @@ export default function Trivia({
   useEffect(() => {
     if (data && data[questionNumber - 1]) {
       setQuestion(data[questionNumber - 1]);
+      setSelectedAnswer(null);
+      setIsRevealed(false);
+      if (setTimerPaused) {
+        setTimerPaused(false);
+      }
     }
-  }, [data, questionNumber]);
+  }, [data, questionNumber, setTimerPaused]);
 
   const delay = (duration, callback) => {
     setTimeout(() => {
@@ -60,17 +65,17 @@ export default function Trivia({
     // Play lock in suspense sound
     lockInAnswer();
 
+    // Lock answer in stable yellow
     setSelectedAnswer(answer);
-    setAnswerState("active");
+    setIsRevealed(false);
 
-    delay(3000, () => {
-      setAnswerState(answer.correct ? "correct" : "wrong");
-    });
+    // Reveal correct/wrong after suspense delay
+    delay(2500, () => {
+      setIsRevealed(true);
 
-    delay(5000, () => {
       if (answer.correct) {
         correctAnswer();
-        delay(5000, () => {
+        delay(4000, () => {
           if (setTimerPaused) {
             setTimerPaused(false);
           }
@@ -79,12 +84,12 @@ export default function Trivia({
           } else {
             setQuestionNumber((prev) => prev + 1);
             setSelectedAnswer(null);
-            setAnswerState("");
+            setIsRevealed(false);
           }
         });
       } else {
         wrongAnswer();
-        delay(5000, () => {
+        delay(4500, () => {
           setStop(true);
         });
       }
@@ -94,6 +99,24 @@ export default function Trivia({
   const answers = question.answers || [];
   const row1 = answers.slice(0, 2);
   const row2 = answers.slice(2, 4);
+
+  const getAnswerClass = (item) => {
+    if (!selectedAnswer) return "";
+
+    if (selectedAnswer === item) {
+      if (!isRevealed) {
+        return "locked"; // Stable yellow while suspense
+      }
+      return item.correct ? "correct" : "wrong"; // Green if correct, Red if wrong
+    }
+
+    // If answer is revealed and this option is the actual correct answer (when user picked wrong)
+    if (isRevealed && item.correct) {
+      return "revealed-correct"; // Green highlight for the right answer
+    }
+
+    return "";
+  };
 
   return (
     <div className="trivia-container">
@@ -111,12 +134,11 @@ export default function Trivia({
         {/* Row 1: A and B */}
         <div className="kbc-rail answers-rail">
           {row1.map((item, idx) => {
-            const isSelected = selectedAnswer === item;
-            const stateClass = isSelected ? answerState : "";
+            const answerClass = getAnswerClass(item);
             return (
               <div
                 key={idx}
-                className={`kbc-box answer-box ${stateClass}`}
+                className={`kbc-box answer-box ${answerClass}`}
                 onClick={() => handleClick(item)}>
                 <div className="kbc-inner answer-inner">
                   <span className="option-prefix">&#9670; {OPTION_LETTERS[idx]}:</span>
@@ -131,12 +153,11 @@ export default function Trivia({
         <div className="kbc-rail answers-rail">
           {row2.map((item, idx) => {
             const actualIndex = idx + 2;
-            const isSelected = selectedAnswer === item;
-            const stateClass = isSelected ? answerState : "";
+            const answerClass = getAnswerClass(item);
             return (
               <div
                 key={actualIndex}
-                className={`kbc-box answer-box ${stateClass}`}
+                className={`kbc-box answer-box ${answerClass}`}
                 onClick={() => handleClick(item)}>
                 <div className="kbc-inner answer-inner">
                   <span className="option-prefix">&#9670; {OPTION_LETTERS[actualIndex]}:</span>

@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useMemo } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import useSound from "use-sound";
 import { Howler } from "howler";
 import img from "../assets/images/bg.jpg";
+import logoImg from "../assets/images/logo.jpg";
 import gameOverSound from "../assets/sounds/src_sounds_gameover.mp3";
 
 // Components
@@ -10,6 +11,52 @@ import Trivia from "../components/Trivia";
 import localQuizData from "../assets/data/quizData.json";
 import { fetchQuizQuestions } from "../services/api";
 import Timer from "../components/Timer";
+
+const DEFAULT_PRIZE_TIERS = {
+  1: "₹ 1,000",
+  2: "₹ 2,000",
+  3: "₹ 3,000",
+  4: "₹ 5,000",
+  5: "₹ 10,000",
+  6: "₹ 20,000",
+  7: "₹ 40,000",
+  8: "₹ 80,000",
+  9: "₹ 1,60,000",
+  10: "₹ 3,20,000",
+  11: "₹ 6,40,000",
+  12: "₹ 12,50,000",
+  13: "₹ 25,00,000",
+  14: "₹ 50,00,000",
+  15: "₹ 1,00,00,000",
+};
+
+const floatLogo = keyframes`
+  0% {
+    transform: translateY(0px) scale(1);
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7))
+            drop-shadow(0 0 20px rgba(248, 193, 70, 0.45));
+  }
+  50% {
+    transform: translateY(-8px) scale(1.04);
+    filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.85))
+            drop-shadow(0 0 35px rgba(248, 193, 70, 0.8))
+            drop-shadow(0 0 25px rgba(0, 168, 255, 0.5));
+  }
+  100% {
+    transform: translateY(0px) scale(1);
+    filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.7))
+            drop-shadow(0 0 20px rgba(248, 193, 70, 0.45));
+  }
+`;
+
+const spinRing = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`;
 
 const HomeStyled = styled.div`
   height: 100vh;
@@ -158,8 +205,53 @@ const HomeStyled = styled.div`
     height: 45%;
     position: relative;
     display: flex;
-    align-items: flex-end;
-    justify-content: flex-start;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Animated KBC Game Screen Logo */
+  .gameLogoWrapper {
+    position: relative;
+    width: 145px;
+    height: 145px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 5;
+    margin-bottom: 8px;
+    animation: fadeIn 0.8s ease;
+  }
+
+  .gameOrbitRing {
+    position: absolute;
+    inset: -9px;
+    border-radius: 50%;
+    border: 2px dashed rgba(248, 193, 70, 0.7);
+    box-shadow: 0 0 20px rgba(248, 193, 70, 0.35), inset 0 0 10px rgba(248, 193, 70, 0.2);
+    animation: ${spinRing} 22s linear infinite;
+    pointer-events: none;
+  }
+
+  .gameLogoContainer {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, #f8c146 0%, #ff9800 50%, #b7950b 100%);
+    box-shadow:
+      0 10px 25px rgba(0, 0, 0, 0.85),
+      0 0 25px rgba(248, 193, 70, 0.5),
+      0 0 40px rgba(0, 168, 255, 0.3);
+    animation: ${floatLogo} 3.6s ease-in-out infinite;
+  }
+
+  .gameLogoImg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+    border: 3px solid #03022f;
   }
 
   .timer {
@@ -177,6 +269,7 @@ const HomeStyled = styled.div`
     left: 80px;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
     background: rgba(0, 0, 0, 0.4);
+    z-index: 6;
   }
 
   .bottom {
@@ -229,38 +322,56 @@ const HomeStyled = styled.div`
   .moneyList {
     list-style: none;
     width: 100%;
-    padding: 10px 20px;
+    padding: 8px 16px;
     overflow-y: auto;
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    gap: 2px;
     box-sizing: border-box;
   }
 
   .moneyListItem {
     display: flex;
     align-items: center;
-    padding: 4px 8px;
+    justify-content: space-between;
+    padding: 4px 10px;
     border-radius: 6px;
     transition: all 0.2s ease;
+    color: #ffffff;
   }
 
   .moneyListItem.active {
     background: linear-gradient(90deg, #008080, #00a8a8);
-    box-shadow: 0 0 12px rgba(0, 168, 168, 0.7);
+    box-shadow: 0 0 14px rgba(0, 168, 168, 0.9);
+
+    .moneyListItemNumber,
+    .moneyListItemAmount {
+      color: #ffffff !important;
+      font-weight: 800;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+    }
   }
 
   .moneyListItemNumber {
     font-size: 15px;
-    font-weight: 400;
-    width: 35%;
+    font-weight: 700;
+    width: 25%;
     color: #ffd700;
   }
 
   .moneyListItemAmount {
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    text-align: right;
+    flex: 1;
+  }
+
+  .moneyListItem.milestone .moneyListItemAmount {
+    color: #ffd700;
+    font-weight: 800;
   }
 
   /* Volume Controller at bottom of pyramid */
@@ -394,12 +505,18 @@ const HomeStyled = styled.div`
         height: 35%;
       }
 
+      .gameLogoWrapper {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 4px;
+      }
+
       .timer {
         bottom: 5px;
         left: 20px;
-        width: 60px;
-        height: 60px;
-        font-size: 24px;
+        width: 58px;
+        height: 58px;
+        font-size: 22px;
         border-width: 4px;
       }
 
@@ -464,7 +581,7 @@ const HomeStyled = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at center, #0a0640 0%, #03022f 70%, #010015 100%);
+    background: radial-gradient(circle at center, #0a0640 0%, #03022f 70%, #010018 100%);
     backdrop-filter: blur(16px);
     display: flex;
     flex-direction: column;
@@ -602,10 +719,11 @@ export default function HomeScreen() {
   const moneyPyramid = useMemo(
     () =>
       quizQuestions
-        .map((item) => ({
-          id: item.id,
-          amount: item.amount,
-        }))
+        .map((item, idx) => {
+          const id = item.id || idx + 1;
+          const amount = item.amount || DEFAULT_PRIZE_TIERS[id] || `₹ ${id * 1000}`;
+          return { id, amount };
+        })
         .reverse(),
     [quizQuestions],
   );
@@ -674,6 +792,14 @@ export default function HomeScreen() {
                   timerPaused={timerPaused}
                 />
               </div>
+
+              {/* Central Animated KBC Logo */}
+              <div className="gameLogoWrapper" title="Kaun Banega Crorepati">
+                <div className="gameOrbitRing" />
+                <div className="gameLogoContainer">
+                  <img src={logoImg} alt="KBC Logo" className="gameLogoImg" />
+                </div>
+              </div>
             </div>
             <div className="bottom">
               <Trivia
@@ -698,14 +824,17 @@ export default function HomeScreen() {
           </button>
         </div>
         <ul className="moneyList">
-          {moneyPyramid.map((m, index) => (
-            <li
-              key={index}
-              className={questionNumber === m.id ? "moneyListItem active" : "moneyListItem"}>
-              <span className="moneyListItemNumber">{m.id}</span>
-              <span className="moneyListItemAmount">{m.amount}</span>
-            </li>
-          ))}
+          {moneyPyramid.map((m, index) => {
+            const isMilestone = m.id === 5 || m.id === 10 || m.id === 15;
+            return (
+              <li
+                key={index}
+                className={`moneyListItem ${questionNumber === m.id ? "active" : ""} ${isMilestone ? "milestone" : ""}`}>
+                <span className="moneyListItemNumber">{m.id}</span>
+                <span className="moneyListItemAmount">{m.amount}</span>
+              </li>
+            );
+          })}
         </ul>
 
         {/* Persistent Volume Control */}

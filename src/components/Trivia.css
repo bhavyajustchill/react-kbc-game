@@ -155,112 +155,55 @@
   letter-spacing: 0.3px;
 }
 
-/* Hover & Active States */
+/* Hover & Locked (Stable Yellow Suspense) States */
 .answer-box:hover .kbc-inner,
-.answer-box.active .kbc-inner {
-  background: linear-gradient(180deg, #e67e22 0%, #d35400 55%, #a04000 100%);
+.answer-box.active .kbc-inner,
+.answer-box.locked .kbc-inner {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 60%, #b45309 100%);
 }
 
 .answer-box:hover,
-.answer-box.active {
-  background: linear-gradient(180deg, #ffe082 0%, #ffffff 30%, #e67e22 70%, #ffb74d 100%);
+.answer-box.active,
+.answer-box.locked {
+  background: linear-gradient(180deg, #fef08a 0%, #ffffff 30%, #f59e0b 70%, #fbbf24 100%);
+  filter: drop-shadow(0 0 14px rgba(245, 158, 11, 0.85));
 }
 
 .answer-box:hover .option-prefix,
-.answer-box.active .option-prefix {
+.answer-box.active .option-prefix,
+.answer-box.locked .option-prefix {
   color: #ffffff;
 }
 
-/* Correct Answer Animation */
-.answer-box.correct {
-  animation: borderCorrect 3s ease forwards;
+/* Correct Answer State (Selected Right OR Revealed Right) - Solid Green */
+.answer-box.correct,
+.answer-box.revealed-correct {
+  background: linear-gradient(180deg, #a9dfbf 0%, #ffffff 30%, #27ae60 70%, #52be80 100%);
+  filter: drop-shadow(0 0 16px rgba(46, 204, 113, 0.95));
 }
 
-.answer-box.correct .kbc-inner {
-  animation: bgCorrect 3s ease forwards;
+.answer-box.correct .kbc-inner,
+.answer-box.revealed-correct .kbc-inner {
+  background: linear-gradient(180deg, #2ecc71 0%, #1e8449 60%, #145a32 100%);
 }
 
-.answer-box.correct .option-prefix {
+.answer-box.correct .option-prefix,
+.answer-box.revealed-correct .option-prefix {
   color: #ffffff;
 }
 
-@keyframes bgCorrect {
-  0%,
-  20%,
-  40% {
-    background: linear-gradient(180deg, #e67e22 0%, #d35400 100%);
-  }
-  10%,
-  30% {
-    background: linear-gradient(180deg, #12093c 0%, #02010d 100%);
-  }
-  60%,
-  100% {
-    background: linear-gradient(180deg, #2ecc71 0%, #1e8449 60%, #145a32 100%);
-  }
-}
-
-@keyframes borderCorrect {
-  0%,
-  20%,
-  40% {
-    background: linear-gradient(180deg, #ffe082 0%, #ffffff 30%, #e67e22 70%, #ffb74d 100%);
-  }
-  10%,
-  30% {
-    background: linear-gradient(180deg, #b0c8e4 0%, #ffffff 30%, #537199 55%, #8fb0d7 85%, #ffffff 100%);
-  }
-  60%,
-  100% {
-    background: linear-gradient(180deg, #a9dfbf 0%, #ffffff 30%, #27ae60 70%, #52be80 100%);
-    filter: drop-shadow(0 0 12px rgba(46, 204, 113, 0.8));
-  }
-}
-
-/* Wrong Answer Animation */
+/* Wrong Answer State (Selected Wrong) - Solid Red */
 .answer-box.wrong {
-  animation: borderWrong 3s ease forwards;
+  background: linear-gradient(180deg, #f5b7b1 0%, #ffffff 30%, #c0392b 70%, #e74c3c 100%);
+  filter: drop-shadow(0 0 16px rgba(231, 76, 60, 0.95));
 }
 
 .answer-box.wrong .kbc-inner {
-  animation: bgWrong 3s ease forwards;
+  background: linear-gradient(180deg, #e74c3c 0%, #b03a2e 60%, #78281f 100%);
 }
 
 .answer-box.wrong .option-prefix {
   color: #ffffff;
-}
-
-@keyframes bgWrong {
-  0%,
-  20%,
-  40% {
-    background: linear-gradient(180deg, #e67e22 0%, #d35400 100%);
-  }
-  10%,
-  30% {
-    background: linear-gradient(180deg, #12093c 0%, #02010d 100%);
-  }
-  60%,
-  100% {
-    background: linear-gradient(180deg, #e74c3c 0%, #b03a2e 60%, #78281f 100%);
-  }
-}
-
-@keyframes borderWrong {
-  0%,
-  20%,
-  40% {
-    background: linear-gradient(180deg, #ffe082 0%, #ffffff 30%, #e67e22 70%, #ffb74d 100%);
-  }
-  10%,
-  30% {
-    background: linear-gradient(180deg, #b0c8e4 0%, #ffffff 30%, #537199 55%, #8fb0d7 85%, #ffffff 100%);
-  }
-  60%,
-  100% {
-    background: linear-gradient(180deg, #f5b7b1 0%, #ffffff 30%, #c0392b 70%, #e74c3c 100%);
-    filter: drop-shadow(0 0 12px rgba(231, 76, 60, 0.8));
-  }
 }
 
 /* Responsive adjustments */
